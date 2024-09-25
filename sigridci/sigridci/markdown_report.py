@@ -17,6 +17,7 @@ import os
 
 from .objective import Objective, ObjectiveStatus
 from .report import Report
+from .publish_options import PublishOptions, CommentContentsMode, CommentState
 
 
 class MarkdownReport(Report):
@@ -42,7 +43,18 @@ class MarkdownReport(Report):
         md += f"{self.renderSummary(feedback, options)}\n\n"
         md += f"Sigrid compared your code against the baseline of {self.formatBaseline(feedback)}.\n\n"
 
+        if options.commentContentsMode == CommentContentsMode.SHORT:
+            md += "\n----\n\n"
+            md += f"[**View this system in Sigrid**]({sigridLink})\n"
+            return md
+
+        if options.commentContentsMode == CommentContentsMode.COLLAPSED:
+            md += "\n"
+            md += "<details><summary>Details</summary>"
+            md += "\n"
+
         if status != ObjectiveStatus.UNKNOWN:
+            md += "\n----\n\n"
             md += self.renderRefactoringCandidates(feedback, options)
             md += "## Sigrid ratings\n\n"
             md += self.renderRatingsTable(feedback)
@@ -57,6 +69,10 @@ class MarkdownReport(Report):
             md += f"- ✅ [Yes, these findings are useful]({self.getFeedbackLink(options, 'useful')})\n"
             md += f"- 🔸 [The findings are false positives]({self.getFeedbackLink(options, 'falsepositive')})\n"
             md += f"- 🔹 [These findings are not so important to me]({self.getFeedbackLink(options, 'unimportant')})\n"
+
+        if options.commentContentsMode == CommentContentsMode.COLLAPSED:
+            md += "</details>"
+            
         return md
 
     def renderSummary(self, feedback, options):

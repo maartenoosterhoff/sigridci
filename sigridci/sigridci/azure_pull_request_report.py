@@ -17,7 +17,8 @@ import os
 import urllib.error
 import urllib.request
 
-from .publish_options import RunMode
+from .objective import Objective, ObjectiveStatus
+from .publish_options import RunMode, CommentState
 from .report import Report
 from .upload_log import UploadLog
 
@@ -33,7 +34,7 @@ class AzurePullRequestReport(Report):
 
         UploadLog.log("Sending feedback to Azure DevOps API")
 
-        request = urllib.request.Request(self.buildURL(), self.buildRequestBody(feedbackFile))
+        request = urllib.request.Request(self.buildURL(), self.buildRequestBody(feedbackFile, feedback, options))
         request.add_header("Authorization", f"Bearer {os.environ['SYSTEM_ACCESSTOKEN']}")
         request.add_header("Content-Type", "application/json")
         try:
@@ -55,17 +56,25 @@ class AzurePullRequestReport(Report):
         version = self.AZURE_API_VERSION
         return f"{baseURL}{project}/_apis/git/repositories/{repo}/pullRequests/{pr}/threads?api-version={version}"
 
-    def buildRequestBody(self, feedbackFile):
+    def buildRequestBody(self, feedbackFile, feedback, options):
         with open(feedbackFile, mode="r", encoding="utf-8") as f:
-            feedback = f.read()
+            feedbackContent = f.read()
+
+        status = Objective.determineStatus(feedback, options)
+        commentState = "active"
+        if options.commentState == CommentState.CLOSED:
+            commentState = "closed"
+        if options.commentState == CommentState.SMART:
+            if (status != ObjectiveStatus.WORSENED):
+                commentState = "closed"
 
         body = {
             "comments": [{
                 "parentCommentId": 0,
-                "content": feedback,
+                "content": feedbackContent,
                 "commentType": "text"
             }],
-            "status": "active"
+            "status": commentState
         }
 
         return json.dumps(body).encode("utf-8")
