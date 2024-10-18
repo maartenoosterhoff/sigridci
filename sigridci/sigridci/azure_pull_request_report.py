@@ -18,7 +18,7 @@ import urllib.error
 import urllib.request
 
 from .objective import Objective, ObjectiveStatus
-from .publish_options import RunMode, CommentState
+from .publish_options import RunMode
 from .report import Report
 from .upload_log import UploadLog
 

@@ -17,7 +17,7 @@ import os
 
 from .objective import Objective, ObjectiveStatus
 from .report import Report
-from .publish_options import PublishOptions, CommentContentsMode, CommentState
+from .publish_options import PublishOptions, CommentContentsMode
 
 
 class MarkdownReport(Report):

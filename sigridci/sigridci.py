@@ -18,7 +18,7 @@ import os
 import sys
 from argparse import ArgumentParser, SUPPRESS
 
-from sigridci.publish_options import PublishOptions, RunMode, CommentContentsMode, CommentState
+from sigridci.publish_options import PublishOptions, RunMode, CommentContentsMode
 from sigridci.sigrid_api_client import SigridApiClient
 from sigridci.sigridci_runner import SigridCiRunner
 from sigridci.upload_log import UploadLog
@@ -40,8 +40,7 @@ def parsePublishOptions(args):
         targetRating=parseTarget(args.targetquality),
         outputDir=args.out,
         sigridURL=args.sigridurl,
-        commentContentsMode=parseCommentContentsMode(args),
-        commentState=parseCommentState(args)
+        commentContentsMode=parseCommentContentsMode(args)
     )
 
 
@@ -60,14 +59,6 @@ def parseCommentContentsMode(args):
         return CommentContentsMode.SHORT
     else:
         return CommentContentsMode.FULL
-
-def parseCommentState(args):
-    if args.commentstate.lower() == 'active':
-        return CommentState.ACTIVE
-    elif args.commentcontents.lower() == 'smart':
-        return CommentState.SMART
-    else:
-        return CommentState.CLOSED
 
 def parseTarget(target):
     if target == "sigrid":
@@ -91,7 +82,6 @@ if __name__ == "__main__":
     parser.add_argument("--showupload", action="store_true", help="Logs the contents of the upload published to Sigrid.")
     parser.add_argument("--out", type=str, default="sigrid-ci-output", help="Output directory for Sigrid CI feedback.")
     parser.add_argument("--commentcontents", type=str, default="full", help="Indicates how the comment on the decorated PR are displayed: full, collapsed, short")
-    parser.add_argument("--commentstate", type=str, default="smart", help="Indicates what the comment on the decorated PR will be: closed, active, smart")
     parser.add_argument("--sigridurl", type=str, default="https://sigrid-says.com", help=SUPPRESS)
     # This option is now enabled by default, using an anonymized history,
     # but we leave it here to avoid breaking people's configuration.

@@ -29,11 +29,6 @@ class CommentContentsMode(Enum):
     COLLAPSED = 2
     SHORT = 3
 
-class CommentState(Enum):
-    ACTIVE = 1
-    CLOSED = 2
-    SMART = 3
-
 
 @dataclass
 class PublishOptions:
@@ -53,7 +48,6 @@ class PublishOptions:
     feedbackURL: str = "https://docs.sigrid-says.com/landing/feedback.html"
     partner: str = "sig"
     commentContentsMode: CommentContentsMode = CommentContentsMode.FULL
-    commentState: CommentState = CommentState.SMART
 
     SYSTEM_NAME_PATTERN = re.compile("^[a-z0-9]+(-[a-z0-9]+)*$", re.IGNORECASE)
     SYSTEM_NAME_LENGTH = range(2, 65)
